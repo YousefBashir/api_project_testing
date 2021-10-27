@@ -36,20 +36,26 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.white,
               ),
               padding: EdgeInsets.all(20),
-              child: CarouselSlider(
-                  items: provider.allProducts
-                      .map((e) => CachedNetworkImage(imageUrl: e.image))
-                      .toList(),
-                  options: CarouselOptions(
-                    height: 400,
-                    aspectRatio: 16 / 9,
-                    viewportFraction: 0.8,
-                    initialPage: 0,
-                    enableInfiniteScroll: true,
-                    reverse: false,
-                    autoPlay: true,
-                    scrollDirection: Axis.horizontal,
-                  )),
+              child: provider.allCategories == null
+                  ? Container(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  : CarouselSlider(
+                      items: provider.allProducts
+                          .map((e) => CachedNetworkImage(imageUrl: e.image))
+                          .toList(),
+                      options: CarouselOptions(
+                        height: 400,
+                        aspectRatio: 16 / 9,
+                        viewportFraction: 0.8,
+                        initialPage: 0,
+                        enableInfiniteScroll: true,
+                        reverse: false,
+                        autoPlay: true,
+                        scrollDirection: Axis.horizontal,
+                      )),
             ),
             SizedBox(
               height: 7,
@@ -64,7 +70,6 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.blue[600]),
               ),
             ),
-
             Container(
               height: 70,
               child: provider.allCategories == null
@@ -118,12 +123,14 @@ class _HomePageState extends State<HomePage> {
                                 onTap: () {
                                   provider.getSpecificProduct(
                                       provider.categoryProducts[index].id);
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (context) {
                                     return ProductDetails();
                                   }));
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(5),
+                                  padding: EdgeInsets.all(7),
+                                  margin: EdgeInsets.only(left: 7),
                                   color: Colors.white,
                                   child: Column(
                                     crossAxisAlignment:
@@ -143,10 +150,37 @@ class _HomePageState extends State<HomePage> {
                                       SizedBox(
                                         height: 5,
                                       ),
-                                      Text(
-                                        "\$${provider.categoryProducts[index].price.toString()}",
-                                        style: TextStyle(
-                                            color: Colors.green, fontSize: 17),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "\$${provider.categoryProducts[index].price.toString()}",
+                                            style: TextStyle(
+                                                color: Colors.green,
+                                                fontSize: 17),
+                                          ),
+                                          IconButton(
+                                              onPressed: () {
+                                                provider.addToFavorite(provider
+                                                    .categoryProducts[index]);
+                                              },
+                                              iconSize: 30,
+                                              icon: Icon(
+                                                Icons.favorite,
+                                                color: provider
+                                                    .favoriteProducts
+                                                    ?.any((element) =>
+                                                element
+                                                    .id ==
+                                                    provider
+                                                        .categoryProducts[index]
+                                                        .id) ??
+                                                    false
+                                                    ? Colors.red
+                                                    : Colors.black,
+                                              )),
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -154,13 +188,9 @@ class _HomePageState extends State<HomePage> {
                               );
                             }),
                       )),
-
-
           ],
         ),
       );
     });
   }
 }
-
-
